@@ -1,5 +1,6 @@
 ﻿using BookStore_Miheev.Models;
 using Microsoft.AspNetCore.Mvc;
+using System.Data.Entity;
 using System.Diagnostics;
 
 namespace BookStore_Miheev.Controllers
@@ -27,14 +28,63 @@ namespace BookStore_Miheev.Controllers
             db.SaveChanges();
             return "Thanks " + purchase.Person + " foy you money";
         }
-        //[HttpGet]
-        //public ActionResult EditBook(int? id)
-        //{
-        //    if (id == null){
-        //        return HttpNotFound();
-        //    }
+        [HttpGet]
+        public ActionResult EditBook(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+            Book book = db.Books.Find(id);
+            if (book != null)
+            {
+                return View(book);
+            }
+            return NotFound();
+        }
+        [HttpPost]
+        public ActionResult EditBook(Book book)
+        {
+            db.Entry(book).State = EntityState.Modified;
+            db.SaveChanges();
+            return RedirectToAction("Index");
+        }
+        [HttpGet]
+        public ActionResult Create()
+        {
+            return View();
+        }
+        [HttpPost]
+        public ActionResult Create(Book book)
+        {
+            //db.Entry(book).State=EntityState.Added;
+            db.Books.Add(book);
+            db.SaveChanges();
+            return RedirectToAction("Index");
+        }
+        [HttpGet]
+        public ActionResult Delete(int id)
+        {
+            Book b = db.Books.Find(id);
+            if (b == null)
+            {
+                return NotFound();
+            }
+            return View(b);
+        }
+        [HttpPost, ActionName("Delete")]
+        public ActionResult DeleteConfirmed(int id)
+        {
+            Book b = db.Books.Find(id);
+            if (b == null)
+            {
+                return NotFound();
+            }
+            db.Books.Remove(b);
+            db.SaveChanges();
+            return RedirectToAction("Index");
+        }
 
-        //}
 
         //private ActionResult HttpNotFound()
         //{
